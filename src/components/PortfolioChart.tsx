@@ -23,7 +23,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
       <div className="glass-card p-3 text-sm">
         <p className="text-gray-400 mb-1">{label}</p>
         <p className="text-gray-100 font-semibold">
-          ${payload[0].value.toLocaleString()}
+          {payload[0].value.toLocaleString()} SOL
         </p>
       </div>
     );
@@ -62,12 +62,12 @@ export default function PortfolioChart() {
             fontSize={12}
             tickLine={false}
             axisLine={false}
-            tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
+            tickFormatter={(value) => `${value} SOL`}
           />
           <Tooltip content={<CustomTooltip />} />
           <Area
             type="monotone"
-            dataKey="value"
+            dataKey="valueSol"
             stroke="#00e68a"
             strokeWidth={2}
             fill="url(#portfolioGradient)"

@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { TrendingUp, Activity, ExternalLink } from "lucide-react";
-import { type TrackedWallet, formatUsd, shortenAddress } from "@/lib/mockData";
+import { Activity, Crosshair, Skull } from "lucide-react";
+import { type TrackedWallet, formatSol, shortenAddress } from "@/lib/mockData";
 
 interface WalletCardProps {
   wallet: TrackedWallet;
@@ -9,14 +9,7 @@ interface WalletCardProps {
 const riskColors = {
   Conservative: "badge-blue",
   Moderate: "badge-yellow",
-  Aggressive: "badge-red",
-};
-
-const chainColors: Record<string, string> = {
-  ETH: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-  SOL: "bg-purple-500/10 text-purple-400 border-purple-500/20",
-  BASE: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  ARB: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+  Degen: "badge-red",
 };
 
 export default function WalletCard({ wallet }: WalletCardProps) {
@@ -37,10 +30,8 @@ export default function WalletCard({ wallet }: WalletCardProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span
-              className={`badge text-[10px] border ${chainColors[wallet.chain]}`}
-            >
-              {wallet.chain}
+            <span className="badge text-[10px] border bg-purple-500/10 text-purple-400 border-purple-500/20">
+              SOL
             </span>
             {wallet.isActive && (
               <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
@@ -60,10 +51,10 @@ export default function WalletCard({ wallet }: WalletCardProps) {
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-              Total Profit
+              Profit
             </p>
             <p className="text-lg font-bold text-gray-100">
-              {formatUsd(wallet.totalProfitUsd)}
+              {formatSol(wallet.totalProfitSol)}
             </p>
           </div>
           <div>
@@ -74,6 +65,21 @@ export default function WalletCard({ wallet }: WalletCardProps) {
               +{wallet.totalProfitPercent}%
             </p>
           </div>
+        </div>
+
+        {/* Pump.fun Stats */}
+        <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
+          <span className="flex items-center gap-1">
+            <Crosshair className="w-3 h-3" />
+            {wallet.tokensAped} aped
+          </span>
+          <span className="flex items-center gap-1">
+            <Skull className="w-3 h-3 text-accent-red" />
+            {wallet.rugsPulled} rugs
+          </span>
+          <span className="text-gray-600">
+            Avg entry: {wallet.avgEntryMcap}
+          </span>
         </div>
 
         {/* Footer */}

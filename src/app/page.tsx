@@ -8,26 +8,28 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   ExternalLink,
+  Rocket,
+  GraduationCap,
 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import ActivityItemComponent from "@/components/ActivityItem";
-import { activePositions, activityFeed, formatUsd } from "@/lib/mockData";
+import { activePositions, activityFeed, formatSol, formatMcap } from "@/lib/mockData";
 import Link from "next/link";
 
 const stats = [
   {
     label: "Portfolio Value",
-    value: "$78,200",
-    change: "+$2,700",
-    changePercent: "+3.6%",
+    value: "548 SOL",
+    change: "+42 SOL today",
+    changePercent: "+8.3%",
     positive: true,
     icon: Wallet,
   },
   {
-    label: "24h Profit/Loss",
-    value: "+$4,280",
+    label: "24h P&L",
+    value: "+86.4 SOL",
     change: "vs yesterday",
-    changePercent: "+5.8%",
+    changePercent: "+18.7%",
     positive: true,
     icon: TrendingUp,
   },
@@ -40,10 +42,10 @@ const stats = [
     icon: Users,
   },
   {
-    label: "Mirror Win Rate",
-    value: "76.2%",
+    label: "Snipe Win Rate",
+    value: "72.4%",
     change: "Last 30 days",
-    changePercent: "+2.1%",
+    changePercent: "+4.2%",
     positive: true,
     icon: Target,
   },
@@ -56,7 +58,7 @@ export default function Dashboard() {
       <div>
         <h1 className="text-2xl font-bold text-gray-100">Dashboard</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Your smart money portfolio at a glance
+          Your pump.fun mirror portfolio at a glance
         </p>
       </div>
 
@@ -95,11 +97,11 @@ export default function Dashboard() {
               Portfolio Performance
             </h2>
             <p className="text-xs text-gray-500 mt-0.5">
-              February 2026 · All mirrored positions
+              February 2026 · All mirrored pump.fun positions
             </p>
           </div>
           <div className="flex gap-2">
-            {["7D", "1M", "3M", "ALL"].map((period) => (
+            {["24H", "7D", "1M", "ALL"].map((period) => (
               <button
                 key={period}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -132,30 +134,30 @@ export default function Dashboard() {
                 <tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-dark-500/50">
                   <th className="pb-3 pr-4">Token</th>
                   <th className="pb-3 pr-4">Mirrored From</th>
-                  <th className="pb-3 pr-4">Entry</th>
-                  <th className="pb-3 pr-4">Current</th>
+                  <th className="pb-3 pr-4">Entry MCap</th>
+                  <th className="pb-3 pr-4">Current MCap</th>
                   <th className="pb-3 pr-4 text-right">P&L</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dark-500/30">
                 {activePositions.map((pos) => (
-                  <tr key={pos.symbol} className="group hover:bg-dark-600/30">
+                  <tr key={pos.ticker} className="group hover:bg-dark-600/30">
                     <td className="py-3 pr-4">
                       <div className="flex items-center gap-2">
                         <span className="font-medium text-gray-100">
-                          {pos.symbol}
+                          {pos.ticker}
                         </span>
-                        <span
-                          className={`text-[10px] px-1.5 py-0.5 rounded border ${
-                            pos.chain === "ETH"
-                              ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                              : pos.chain === "SOL"
-                              ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-                              : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
-                          }`}
-                        >
-                          {pos.chain}
-                        </span>
+                        {pos.graduated ? (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded border bg-accent-green/10 text-accent-green border-accent-green/20 flex items-center gap-0.5">
+                            <GraduationCap className="w-2.5 h-2.5" />
+                            RAY
+                          </span>
+                        ) : (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded border bg-purple-500/10 text-purple-400 border-purple-500/20 flex items-center gap-0.5">
+                            <Rocket className="w-2.5 h-2.5" />
+                            {pos.bondingCurvePercent}%
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="py-3 pr-4">
@@ -165,12 +167,12 @@ export default function Dashboard() {
                     </td>
                     <td className="py-3 pr-4">
                       <span className="text-sm text-gray-300 font-mono">
-                        ${pos.entryPrice}
+                        {formatMcap(pos.entryMcap)}
                       </span>
                     </td>
                     <td className="py-3 pr-4">
                       <span className="text-sm text-gray-100 font-mono">
-                        ${pos.currentPrice}
+                        {formatMcap(pos.currentMcap)}
                       </span>
                     </td>
                     <td className="py-3 pr-4 text-right">
@@ -188,18 +190,18 @@ export default function Dashboard() {
                           }`}
                         >
                           {pos.pnlPercent >= 0 ? "+" : ""}
-                          {pos.pnlPercent.toFixed(1)}%
+                          {pos.pnlPercent.toFixed(0)}%
                         </span>
                       </div>
                       <p
                         className={`text-xs mt-0.5 ${
-                          pos.pnlUsd >= 0
+                          pos.pnlSol >= 0
                             ? "text-accent-green/70"
                             : "text-accent-red/70"
                         }`}
                       >
-                        {pos.pnlUsd >= 0 ? "+" : ""}
-                        {formatUsd(Math.abs(pos.pnlUsd))}
+                        {pos.pnlSol >= 0 ? "+" : ""}
+                        {pos.pnlSol.toFixed(1)} SOL
                       </p>
                     </td>
                   </tr>

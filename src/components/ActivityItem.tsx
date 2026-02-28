@@ -1,15 +1,18 @@
 import {
   ArrowUpRight,
   ArrowDownRight,
-  ArrowLeftRight,
+  Crosshair,
   Loader2,
   CheckCircle2,
   XCircle,
   Clock,
   AlertTriangle,
+  Rocket,
+  GraduationCap,
+  Users,
 } from "lucide-react";
 import SafetyBadge from "./SafetyBadge";
-import { type ActivityItem as ActivityItemType, formatUsd } from "@/lib/mockData";
+import { type ActivityItem as ActivityItemType, formatMcap } from "@/lib/mockData";
 
 interface ActivityItemProps {
   item: ActivityItemType;
@@ -18,13 +21,13 @@ interface ActivityItemProps {
 const actionIcons = {
   BUY: ArrowUpRight,
   SELL: ArrowDownRight,
-  SWAP: ArrowLeftRight,
+  SNIPE: Crosshair,
 };
 
 const actionColors = {
   BUY: "text-accent-green",
   SELL: "text-accent-red",
-  SWAP: "text-accent-blue",
+  SNIPE: "text-accent-cyan",
 };
 
 const statusConfig = {
@@ -37,9 +40,9 @@ const statusConfig = {
   },
   copying: {
     icon: Loader2,
-    label: "Copying Trade...",
-    color: "text-accent-blue",
-    bg: "bg-accent-blue/10 border-accent-blue/20",
+    label: "Sniping...",
+    color: "text-accent-cyan",
+    bg: "bg-accent-cyan/10 border-accent-cyan/20",
     animate: "animate-spin",
   },
   executed: {
@@ -58,7 +61,7 @@ const statusConfig = {
   },
   waiting: {
     icon: Clock,
-    label: "Awaiting Approval",
+    label: "Awaiting Review",
     color: "text-accent-purple",
     bg: "bg-accent-purple/10 border-accent-purple/20",
     animate: "",
@@ -88,19 +91,44 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
               {item.action}
             </span>
             <span className="text-sm text-gray-300 font-semibold">
-              {item.tokenSymbol}
+              {item.tokenTicker}
             </span>
             <span className="text-sm text-gray-500">
-              ({formatUsd(item.amount)})
+              ({item.amountSol} SOL)
             </span>
           </div>
 
           {/* Details */}
-          <p className="text-xs text-gray-500 mb-2">
-            on {item.platform} · {item.chain} · {item.timestamp}
-          </p>
+          <div className="flex items-center gap-2 text-xs text-gray-500 mb-2 flex-wrap">
+            <span>on {item.platform}</span>
+            <span>·</span>
+            <span>MCap {formatMcap(item.marketCap)}</span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              {item.graduated ? (
+                <>
+                  <GraduationCap className="w-3 h-3 text-accent-green" />
+                  <span className="text-accent-green">Graduated</span>
+                </>
+              ) : (
+                <>
+                  <Rocket className="w-3 h-3 text-purple-400" />
+                  <span className="text-purple-400">
+                    Curve {item.bondingCurvePercent}%
+                  </span>
+                </>
+              )}
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              {item.holderCount} holders
+            </span>
+            <span>·</span>
+            <span>{item.timestamp}</span>
+          </div>
 
-          {/* Agent Status */}
+          {/* Agent Status & Safety */}
           <div className="flex items-center gap-3 flex-wrap">
             <div
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${status.bg} ${status.color}`}
@@ -110,9 +138,14 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
             </div>
             <SafetyBadge
               score={item.safetyScore}
-              verified={item.verified}
+              devSold={item.devSold}
               showLabel={false}
             />
+            {item.devSold && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium">
+                DEV SOLD
+              </span>
+            )}
           </div>
 
           {/* Agent Reason (if skipped or waiting) */}

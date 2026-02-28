@@ -5,7 +5,7 @@ import { Radio, Filter } from "lucide-react";
 import ActivityItemComponent from "@/components/ActivityItem";
 import { activityFeed } from "@/lib/mockData";
 
-type StatusFilter = "all" | "executed" | "analyzing" | "skipped" | "waiting";
+type StatusFilter = "all" | "executed" | "analyzing" | "skipped" | "waiting" | "copying";
 
 export default function FeedPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -19,6 +19,7 @@ export default function FeedPage() {
     all: activityFeed.length,
     executed: activityFeed.filter((i) => i.agentStatus === "executed").length,
     analyzing: activityFeed.filter((i) => i.agentStatus === "analyzing").length,
+    copying: activityFeed.filter((i) => i.agentStatus === "copying").length,
     skipped: activityFeed.filter((i) => i.agentStatus === "skipped").length,
     waiting: activityFeed.filter((i) => i.agentStatus === "waiting").length,
   };
@@ -27,6 +28,7 @@ export default function FeedPage() {
     { key: "all", label: "All", color: "text-gray-300" },
     { key: "executed", label: "Executed", color: "text-accent-green" },
     { key: "analyzing", label: "Analyzing", color: "text-accent-yellow" },
+    { key: "copying", label: "Sniping", color: "text-accent-cyan" },
     { key: "skipped", label: "Skipped", color: "text-accent-red" },
     { key: "waiting", label: "Pending", color: "text-accent-purple" },
   ];
@@ -46,8 +48,7 @@ export default function FeedPage() {
             </div>
           </div>
           <p className="text-sm text-gray-500 mt-1">
-            Watch your tracked wallets&apos; moves and the agent&apos;s decisions in
-            real time
+            Watch pump.fun snipes, sells, and the agent&apos;s decisions in real time
           </p>
         </div>
       </div>

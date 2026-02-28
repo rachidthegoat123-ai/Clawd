@@ -5,14 +5,16 @@ import {
   SlidersHorizontal,
   Shield,
   Repeat,
-  DollarSign,
   TrendingDown,
   Percent,
   Zap,
   Lock,
-  AlertTriangle,
   CheckCircle2,
   Info,
+  Rocket,
+  Users,
+  Skull,
+  BarChart3,
 } from "lucide-react";
 import Toggle from "@/components/Toggle";
 
@@ -20,64 +22,68 @@ type MirrorMode = "exact" | "proportional" | "fixed";
 type SlippageLevel = "low" | "med" | "high";
 
 export default function TradeSettingsPage() {
-  // Intelligence Filter state
-  const [minTradeEnabled, setMinTradeEnabled] = useState(true);
-  const [minTradeSize, setMinTradeSize] = useState("5000");
-  const [liquidityGuard, setLiquidityGuard] = useState(true);
-  const [minLiquidity, setMinLiquidity] = useState("100000");
-  const [safetyCheck, setSafetyCheck] = useState(true);
-  const [socialSentiment, setSocialSentiment] = useState(true);
+  // Pump.fun Filter state
+  const [minMcapEnabled, setMinMcapEnabled] = useState(true);
+  const [minMcap, setMinMcap] = useState("3000");
+  const [maxMcapEnabled, setMaxMcapEnabled] = useState(true);
+  const [maxMcap, setMaxMcap] = useState("500000");
+  const [bondingCurveFilter, setBondingCurveFilter] = useState(true);
+  const [minBondingPercent, setMinBondingPercent] = useState("5");
+  const [devWalletCheck, setDevWalletCheck] = useState(true);
+  const [holderDistribution, setHolderDistribution] = useState(true);
+  const [minHolders, setMinHolders] = useState("10");
+  const [bundleDetection, setBundleDetection] = useState(true);
 
   // Mirror Mode state
-  const [mirrorMode, setMirrorMode] = useState<MirrorMode>("proportional");
-  const [fixedAmount, setFixedAmount] = useState("100");
+  const [mirrorMode, setMirrorMode] = useState<MirrorMode>("fixed");
+  const [fixedAmount, setFixedAmount] = useState("5");
   const [proportionalPercent, setProportionalPercent] = useState("1");
 
   // Slippage state
-  const [slippage, setSlippage] = useState<SlippageLevel>("med");
+  const [slippage, setSlippage] = useState<SlippageLevel>("high");
 
   // Exit Strategy state
   const [shadowSell, setShadowSell] = useState(true);
   const [trailingStop, setTrailingStop] = useState(true);
-  const [trailingStopPercent, setTrailingStopPercent] = useState("15");
+  const [trailingStopPercent, setTrailingStopPercent] = useState("30");
   const [takeProfit, setTakeProfit] = useState(true);
-  const [takeProfitMultiplier, setTakeProfitMultiplier] = useState("2");
+  const [takeProfitMultiplier, setTakeProfitMultiplier] = useState("5");
   const [takeProfitSellPercent, setTakeProfitSellPercent] = useState("50");
 
-  // MEV Protection
-  const [mevProtection, setMevProtection] = useState(true);
+  // Jito Tips
+  const [jitoTips, setJitoTips] = useState(true);
 
   const mirrorModes: {
     key: MirrorMode;
     label: string;
     desc: string;
-    icon: typeof DollarSign;
+    icon: typeof Zap;
   }[] = [
     {
       key: "exact",
-      label: "Exact Match",
-      desc: "If they buy $10K, you buy $10K",
-      icon: DollarSign,
+      label: "Exact SOL Match",
+      desc: "If they ape 10 SOL, you ape 10 SOL",
+      icon: Zap,
     },
     {
       key: "proportional",
       label: "Proportional",
-      desc: "Match their % of portfolio",
+      desc: "Match their % of wallet size",
       icon: Percent,
     },
     {
       key: "fixed",
       label: "Fixed Amount",
-      desc: "Always spend a set amount",
+      desc: "Always ape a set SOL amount",
       icon: Lock,
     },
   ];
 
   const slippageLevels: { key: SlippageLevel; label: string; value: string }[] =
     [
-      { key: "low", label: "Low", value: "0.5%" },
-      { key: "med", label: "Medium", value: "1.0%" },
-      { key: "high", label: "High", value: "3.0%" },
+      { key: "low", label: "Low", value: "5%" },
+      { key: "med", label: "Medium", value: "15%" },
+      { key: "high", label: "Degen", value: "30%" },
     ];
 
   return (
@@ -86,11 +92,11 @@ export default function TradeSettingsPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-100">Trade Settings</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Configure how the agent filters, mirrors, and exits trades
+          Configure how the agent filters pump.fun tokens, sizes positions, and exits trades
         </p>
       </div>
 
-      {/* ========== INTELLIGENCE FILTER ========== */}
+      {/* ========== PUMP.FUN SAFETY FILTERS ========== */}
       <div className="glass-card p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-accent-blue/10 border border-accent-blue/20 flex items-center justify-center">
@@ -98,89 +104,147 @@ export default function TradeSettingsPage() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-100">
-              Intelligence Filter
+              Pump.fun Safety Filters
             </h2>
             <p className="text-xs text-gray-500">
-              Don&apos;t copy every trade — only the smart ones
+              Don&apos;t ape every token — filter out rugs and scams
             </p>
           </div>
         </div>
 
         <div className="space-y-5">
-          {/* Min Trade Size */}
+          {/* Min Market Cap */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={minTradeEnabled}
-              onToggle={setMinTradeEnabled}
-              label="Minimum Trade Size"
-              description="Only copy if the whale spends more than this amount"
+              enabled={minMcapEnabled}
+              onToggle={setMinMcapEnabled}
+              label="Minimum Market Cap"
+              description="Skip tokens below this market cap to avoid ultra-micro launches"
             />
-            {minTradeEnabled && (
+            {minMcapEnabled && (
               <div className="mt-3 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-gray-500" />
+                <BarChart3 className="w-4 h-4 text-gray-500" />
+                <span className="text-xs text-gray-500">$</span>
                 <input
                   type="text"
-                  value={minTradeSize}
-                  onChange={(e) => setMinTradeSize(e.target.value)}
-                  className="input-field w-40 text-sm"
-                  placeholder="5000"
+                  value={minMcap}
+                  onChange={(e) => setMinMcap(e.target.value)}
+                  className="input-field w-32 text-sm"
+                  placeholder="3000"
                 />
-                <span className="text-xs text-gray-500">USD minimum</span>
+                <span className="text-xs text-gray-500">minimum MCap</span>
               </div>
             )}
           </div>
 
-          {/* Liquidity Guard */}
+          {/* Max Market Cap */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={liquidityGuard}
-              onToggle={setLiquidityGuard}
-              label="Liquidity Guard"
-              description="Skip tokens with low liquidity pools to prevent rug-pulls"
+              enabled={maxMcapEnabled}
+              onToggle={setMaxMcapEnabled}
+              label="Maximum Market Cap"
+              description="Skip tokens above this MCap — focus on early plays only"
             />
-            {liquidityGuard && (
+            {maxMcapEnabled && (
               <div className="mt-3 flex items-center gap-2">
-                <DollarSign className="w-4 h-4 text-gray-500" />
+                <BarChart3 className="w-4 h-4 text-gray-500" />
+                <span className="text-xs text-gray-500">$</span>
                 <input
                   type="text"
-                  value={minLiquidity}
-                  onChange={(e) => setMinLiquidity(e.target.value)}
-                  className="input-field w-40 text-sm"
-                  placeholder="100000"
+                  value={maxMcap}
+                  onChange={(e) => setMaxMcap(e.target.value)}
+                  className="input-field w-32 text-sm"
+                  placeholder="500000"
+                />
+                <span className="text-xs text-gray-500">maximum MCap</span>
+              </div>
+            )}
+          </div>
+
+          {/* Bonding Curve Filter */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={bondingCurveFilter}
+              onToggle={setBondingCurveFilter}
+              label="Bonding Curve Filter"
+              description="Only enter if bonding curve progress is above a minimum %"
+            />
+            {bondingCurveFilter && (
+              <div className="mt-3 flex items-center gap-2">
+                <Rocket className="w-4 h-4 text-purple-400" />
+                <input
+                  type="text"
+                  value={minBondingPercent}
+                  onChange={(e) => setMinBondingPercent(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="5"
                 />
                 <span className="text-xs text-gray-500">
-                  Minimum pool liquidity
+                  % minimum bonding curve progress
                 </span>
               </div>
             )}
           </div>
 
-          {/* Safety Check */}
+          {/* Dev Wallet Check */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={safetyCheck}
-              onToggle={setSafetyCheck}
-              label="Contract Verification"
-              description="Only buy tokens verified on Etherscan or BaseScan"
+              enabled={devWalletCheck}
+              onToggle={setDevWalletCheck}
+              label="Dev Wallet Check"
+              description="Skip if deployer has already sold their tokens (rug signal)"
             />
-            {safetyCheck && (
+            {devWalletCheck && (
+              <div className="mt-2 flex items-center gap-2">
+                <Skull className="w-3.5 h-3.5 text-accent-red" />
+                <span className="text-xs text-accent-red">
+                  Auto-skip if dev wallet sold &gt;50% of supply
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Holder Distribution */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={holderDistribution}
+              onToggle={setHolderDistribution}
+              label="Minimum Holders"
+              description="Require a minimum number of unique holders to avoid wash trading"
+            />
+            {holderDistribution && (
+              <div className="mt-3 flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={minHolders}
+                  onChange={(e) => setMinHolders(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="10"
+                />
+                <span className="text-xs text-gray-500">
+                  minimum unique holders
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Bundle Detection */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={bundleDetection}
+              onToggle={setBundleDetection}
+              label="Bundle Detection"
+              description="Flag tokens where deployer and early buyers share the same funding source"
+            />
+            {bundleDetection && (
               <div className="mt-2 flex items-center gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" />
                 <span className="text-xs text-accent-green">
-                  Green checkmark required on block explorer
+                  Bundled launches will be auto-flagged for manual review
                 </span>
               </div>
             )}
-          </div>
-
-          {/* Social Sentiment */}
-          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <Toggle
-              enabled={socialSentiment}
-              onToggle={setSocialSentiment}
-              label="AI Social Sentiment Check"
-              description='The agent checks social media — if a token is called a "scam," it skips the trade'
-            />
           </div>
         </div>
       </div>
@@ -194,7 +258,7 @@ export default function TradeSettingsPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-100">Mirror Mode</h2>
             <p className="text-xs text-gray-500">
-              Choose how to size your mirrored trades
+              Choose how to size your mirrored apes
             </p>
           </div>
         </div>
@@ -232,16 +296,16 @@ export default function TradeSettingsPage() {
         {/* Conditional Inputs */}
         {mirrorMode === "fixed" && (
           <div className="flex items-center gap-2 p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <DollarSign className="w-4 h-4 text-gray-500" />
+            <Zap className="w-4 h-4 text-gray-500" />
             <input
               type="text"
               value={fixedAmount}
               onChange={(e) => setFixedAmount(e.target.value)}
-              className="input-field w-40 text-sm"
-              placeholder="100"
+              className="input-field w-24 text-sm"
+              placeholder="5"
             />
             <span className="text-xs text-gray-500">
-              per trade, regardless of whale&apos;s amount
+              SOL per snipe, regardless of whale&apos;s amount
             </span>
           </div>
         )}
@@ -256,7 +320,7 @@ export default function TradeSettingsPage() {
               placeholder="1"
             />
             <span className="text-xs text-gray-500">
-              % of your wallet per trade (matching their allocation %)
+              % of your wallet per ape (matching their allocation %)
             </span>
           </div>
         )}
@@ -273,7 +337,7 @@ export default function TradeSettingsPage() {
               Slippage Control
             </h2>
             <p className="text-xs text-gray-500">
-              Maximum price deviation you&apos;ll accept on a trade
+              Pump.fun tokens are volatile — set your max price impact
             </p>
           </div>
         </div>
@@ -301,19 +365,19 @@ export default function TradeSettingsPage() {
           ))}
         </div>
 
-        {/* MEV Protection */}
+        {/* Jito Tips */}
         <div className="mt-4 p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
           <Toggle
-            enabled={mevProtection}
-            onToggle={setMevProtection}
-            label="MEV Protection"
-            description="Use private transaction routes so frontrunning bots can't steal your profit"
+            enabled={jitoTips}
+            onToggle={setJitoTips}
+            label="Jito Bundle Tips"
+            description="Use Jito bundles for faster transaction inclusion and front-running protection"
           />
-          {mevProtection && (
+          {jitoTips && (
             <div className="mt-2 flex items-center gap-2">
               <Shield className="w-3.5 h-3.5 text-accent-green" />
               <span className="text-xs text-accent-green">
-                Flashbots Protect / Private mempool enabled
+                Jito tips enabled — priority landing with MEV protection
               </span>
             </div>
           )}
@@ -331,7 +395,7 @@ export default function TradeSettingsPage() {
               Automatic Exit Strategy
             </h2>
             <p className="text-xs text-gray-500">
-              Know when to sell — the hardest part of trading, automated
+              Pump.fun tokens move fast — automate your exits
             </p>
           </div>
         </div>
@@ -353,7 +417,7 @@ export default function TradeSettingsPage() {
               enabled={trailingStop}
               onToggle={setTrailingStop}
               label="Trailing Stop-Loss"
-              description="Auto-sell if the price drops from the peak by a percentage"
+              description="Auto-sell if token dumps from its peak by a percentage"
             />
             {trailingStop && (
               <div className="mt-3 flex items-center gap-2">
@@ -377,7 +441,7 @@ export default function TradeSettingsPage() {
               enabled={takeProfit}
               onToggle={setTakeProfit}
               label="Take Profit"
-              description="Automatically sell a portion when your target is hit"
+              description="Automatically sell a portion when your multiplier target is hit"
             />
             {takeProfit && (
               <div className="mt-3 space-y-3">
@@ -391,7 +455,7 @@ export default function TradeSettingsPage() {
                     className="input-field w-20 text-sm text-center"
                   />
                   <span className="text-xs text-gray-400">
-                    % of position at
+                    % of bag at
                   </span>
                   <input
                     type="text"
@@ -399,7 +463,7 @@ export default function TradeSettingsPage() {
                     onChange={(e) => setTakeProfitMultiplier(e.target.value)}
                     className="input-field w-16 text-sm text-center"
                   />
-                  <span className="text-xs text-gray-400">x profit</span>
+                  <span className="text-xs text-gray-400">x</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Info className="w-3.5 h-3.5 text-gray-500" />

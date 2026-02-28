@@ -9,7 +9,7 @@ import {
   Settings,
   SlidersHorizontal,
   Zap,
-  Shield,
+  Rocket,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -35,14 +35,14 @@ export default function Sidebar() {
     >
       {/* Logo */}
       <div className="p-5 flex items-center gap-3 border-b border-dark-500/50">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-green to-accent-cyan flex items-center justify-center flex-shrink-0">
-          <Shield className="w-5 h-5 text-dark-900" />
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-accent-green to-purple-500 flex items-center justify-center flex-shrink-0">
+          <Rocket className="w-5 h-5 text-white" />
         </div>
         {!collapsed && (
           <div>
             <h1 className="text-lg font-bold gradient-text">Alpha Mirror</h1>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-              Smart Money Tracker
+              Pump.fun Tracker
             </p>
           </div>
         )}
@@ -75,12 +75,12 @@ export default function Sidebar() {
             <div className="flex items-center gap-2 mb-2">
               <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
               <span className="text-xs font-medium text-accent-green">
-                Agent Online
+                Sniper Online
               </span>
             </div>
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Zap className="w-3 h-3" />
-              <span>Monitoring 6 wallets</span>
+              <span>Watching 6 wallets on pump.fun</span>
             </div>
           </div>
         ) : (

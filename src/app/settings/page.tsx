@@ -2,29 +2,26 @@
 
 import { useState } from "react";
 import {
-  Settings,
-  Fuel,
   Shield,
   Bell,
   Palette,
   Key,
   Smartphone,
-  Mail,
-  MessageSquare,
   CheckCircle2,
   AlertTriangle,
   Wallet,
   Globe,
   Eye,
   EyeOff,
+  Zap,
 } from "lucide-react";
 import Toggle from "@/components/Toggle";
 
-type GasPreference = "slow" | "standard" | "fast";
+type PriorityFee = "low" | "standard" | "turbo";
 
 export default function SettingsPage() {
-  // Gas
-  const [gasPreference, setGasPreference] = useState<GasPreference>("standard");
+  // Priority Fees
+  const [priorityFee, setPriorityFee] = useState<PriorityFee>("standard");
 
   // Security
   const [walletConnected, setWalletConnected] = useState(false);
@@ -37,38 +34,38 @@ export default function SettingsPage() {
   const [soundAlerts, setSoundAlerts] = useState(true);
 
   // Notifications - What to notify
-  const [notifyExecutions, setNotifyExecutions] = useState(true);
+  const [notifySnipes, setNotifySnipes] = useState(true);
   const [notifySkips, setNotifySkips] = useState(true);
-  const [notifyProfitTarget, setNotifyProfitTarget] = useState(true);
+  const [notifyGraduations, setNotifyGraduations] = useState(true);
   const [notifyStopLoss, setNotifyStopLoss] = useState(true);
 
   // Display
   const [compactMode, setCompactMode] = useState(false);
-  const [showPnlInUsd, setShowPnlInUsd] = useState(true);
+  const [showPnlInSol, setShowPnlInSol] = useState(true);
 
-  const gasOptions: {
-    key: GasPreference;
+  const feeOptions: {
+    key: PriorityFee;
     label: string;
-    speed: string;
+    fee: string;
     desc: string;
   }[] = [
     {
-      key: "slow",
-      label: "Eco",
-      speed: "~2 min",
-      desc: "Cheapest gas, slower confirmation",
+      key: "low",
+      label: "Economy",
+      fee: "0.0001 SOL",
+      desc: "Low priority fee, may miss fast pumps",
     },
     {
       key: "standard",
       label: "Standard",
-      speed: "~30 sec",
+      fee: "0.001 SOL",
       desc: "Balanced speed and cost",
     },
     {
-      key: "fast",
-      label: "Priority",
-      speed: "~10 sec",
-      desc: "Fastest execution, higher gas",
+      key: "turbo",
+      label: "Turbo",
+      fee: "0.01 SOL",
+      desc: "Maximum speed for sniping, uses Jito bundles",
     },
   ];
 
@@ -78,33 +75,33 @@ export default function SettingsPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-100">Settings</h1>
         <p className="text-sm text-gray-500 mt-1">
-          Configure your preferences, security, and notifications
+          Configure your Solana preferences, security, and notifications
         </p>
       </div>
 
-      {/* ========== GAS PREFERENCES ========== */}
+      {/* ========== PRIORITY FEES ========== */}
       <div className="glass-card p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-10 h-10 rounded-xl bg-accent-yellow/10 border border-accent-yellow/20 flex items-center justify-center">
-            <Fuel className="w-5 h-5 text-accent-yellow" />
+            <Zap className="w-5 h-5 text-accent-yellow" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-100">
-              Gas Preferences
+              Solana Priority Fees
             </h2>
             <p className="text-xs text-gray-500">
-              Choose your default transaction speed
+              Higher fees = faster transaction landing on Solana
             </p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {gasOptions.map((option) => (
+          {feeOptions.map((option) => (
             <button
               key={option.key}
-              onClick={() => setGasPreference(option.key)}
+              onClick={() => setPriorityFee(option.key)}
               className={`p-4 rounded-xl border text-left transition-all ${
-                gasPreference === option.key
+                priorityFee === option.key
                   ? "border-accent-yellow/50 bg-accent-yellow/5"
                   : "border-dark-500/50 bg-dark-800/30 hover:border-dark-500"
               }`}
@@ -112,7 +109,7 @@ export default function SettingsPage() {
               <div className="flex items-center justify-between mb-2">
                 <p
                   className={`text-sm font-semibold ${
-                    gasPreference === option.key
+                    priorityFee === option.key
                       ? "text-gray-100"
                       : "text-gray-300"
                   }`}
@@ -120,13 +117,13 @@ export default function SettingsPage() {
                   {option.label}
                 </p>
                 <span
-                  className={`text-xs ${
-                    gasPreference === option.key
+                  className={`text-xs font-mono ${
+                    priorityFee === option.key
                       ? "text-accent-yellow"
                       : "text-gray-500"
                   }`}
                 >
-                  {option.speed}
+                  {option.fee}
                 </span>
               </div>
               <p className="text-xs text-gray-500">{option.desc}</p>
@@ -144,7 +141,7 @@ export default function SettingsPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-100">Security</h2>
             <p className="text-xs text-gray-500">
-              Wallet connection and key management
+              Solana wallet connection and key management
             </p>
           </div>
         </div>
@@ -157,11 +154,11 @@ export default function SettingsPage() {
                 <Wallet className="w-5 h-5 text-gray-400" />
                 <div>
                   <p className="text-sm font-medium text-gray-200">
-                    Wallet Connection
+                    Phantom Wallet
                   </p>
                   <p className="text-xs text-gray-500">
                     {walletConnected
-                      ? "Connected to 0x7a16...5428"
+                      ? "Connected to 7xKX...sAsU"
                       : "No wallet connected"}
                   </p>
                 </div>
@@ -174,12 +171,12 @@ export default function SettingsPage() {
                     : "btn-primary text-sm py-2"
                 }
               >
-                {walletConnected ? "Disconnect" : "Connect Wallet"}
+                {walletConnected ? "Disconnect" : "Connect Phantom"}
               </button>
             </div>
           </div>
 
-          {/* API Key */}
+          {/* Private Key */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <div className="flex items-center gap-3 mb-3">
               <Key className="w-5 h-5 text-gray-400" />
@@ -195,7 +192,7 @@ export default function SettingsPage() {
             <div className="relative">
               <input
                 type={showKey ? "text" : "password"}
-                placeholder="Enter private key or seed phrase..."
+                placeholder="Enter Solana private key or seed phrase..."
                 className="input-field text-sm pr-10 font-mono"
                 readOnly
                 value="•••••••••••••••••••••••••••••••••••"
@@ -220,26 +217,30 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Network */}
+          {/* RPC */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 mb-3">
               <Globe className="w-5 h-5 text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-200">
-                  Default Network
+                  Solana RPC Endpoint
                 </p>
                 <p className="text-xs text-gray-500">
-                  Auto-detect based on tracked wallet chain
+                  Use a fast RPC for better snipe execution
                 </p>
               </div>
             </div>
-            <div className="flex gap-2 mt-3">
-              {["Ethereum", "Solana", "Base", "Arbitrum"].map((network) => (
+            <div className="flex gap-2 flex-wrap">
+              {["Helius", "QuickNode", "Triton", "Custom"].map((rpc) => (
                 <span
-                  key={network}
-                  className="px-3 py-1.5 rounded-lg bg-dark-600 border border-dark-500 text-xs text-gray-300"
+                  key={rpc}
+                  className={`px-3 py-1.5 rounded-lg border text-xs cursor-pointer transition-colors ${
+                    rpc === "Helius"
+                      ? "bg-accent-green/10 border-accent-green/20 text-accent-green"
+                      : "bg-dark-600 border-dark-500 text-gray-300 hover:border-gray-400"
+                  }`}
                 >
-                  {network}
+                  {rpc}
                 </span>
               ))}
             </div>
@@ -282,7 +283,7 @@ export default function SettingsPage() {
                 enabled={telegramAlerts}
                 onToggle={setTelegramAlerts}
                 label="Telegram Alerts"
-                description="Get instant messages via Telegram bot"
+                description="Get instant snipe alerts via Telegram bot"
               />
               {telegramAlerts && (
                 <div className="mt-3">
@@ -299,7 +300,7 @@ export default function SettingsPage() {
                 enabled={emailDigest}
                 onToggle={setEmailDigest}
                 label="Email Digest"
-                description="Daily summary of all trades and P&L"
+                description="Daily summary of all snipes and P&L"
               />
             </div>
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
@@ -307,7 +308,7 @@ export default function SettingsPage() {
                 enabled={soundAlerts}
                 onToggle={setSoundAlerts}
                 label="Sound Alerts"
-                description="Play a sound when a trade is detected"
+                description="Play a sound when a snipe opportunity is detected"
               />
             </div>
           </div>
@@ -321,26 +322,26 @@ export default function SettingsPage() {
           <div className="space-y-3">
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
               <Toggle
-                enabled={notifyExecutions}
-                onToggle={setNotifyExecutions}
-                label="Trade Executed"
-                description="When the agent successfully mirrors a trade"
+                enabled={notifySnipes}
+                onToggle={setNotifySnipes}
+                label="Snipe Executed"
+                description="When the agent successfully mirrors a pump.fun buy"
               />
             </div>
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
               <Toggle
                 enabled={notifySkips}
                 onToggle={setNotifySkips}
-                label="Trade Skipped"
-                description="When the agent skips a trade due to safety filters"
+                label="Token Skipped"
+                description="When the agent skips a token due to safety filters"
               />
             </div>
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
               <Toggle
-                enabled={notifyProfitTarget}
-                onToggle={setNotifyProfitTarget}
-                label="Profit Target Hit"
-                description="When a position reaches your take-profit level"
+                enabled={notifyGraduations}
+                onToggle={setNotifyGraduations}
+                label="Token Graduated"
+                description="When a held token graduates from pump.fun to Raydium"
               />
             </div>
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
@@ -348,7 +349,7 @@ export default function SettingsPage() {
                 enabled={notifyStopLoss}
                 onToggle={setNotifyStopLoss}
                 label="Stop-Loss Triggered"
-                description="When a trailing stop-loss activates"
+                description="When a trailing stop-loss activates on a position"
               />
             </div>
           </div>
@@ -380,10 +381,10 @@ export default function SettingsPage() {
           </div>
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={showPnlInUsd}
-              onToggle={setShowPnlInUsd}
-              label="Show P&L in USD"
-              description="Display profit/loss in USD instead of native token"
+              enabled={showPnlInSol}
+              onToggle={setShowPnlInSol}
+              label="Show P&L in SOL"
+              description="Display profit/loss in SOL instead of USD"
             />
           </div>
         </div>
