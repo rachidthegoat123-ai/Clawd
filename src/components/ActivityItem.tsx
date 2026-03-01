@@ -11,10 +11,9 @@ import {
   GraduationCap,
   Users,
   Crown,
-  Snowflake,
-  Coins,
   Package,
   Skull,
+  MessageCircleOff,
 } from "lucide-react";
 import SafetyBadge from "./SafetyBadge";
 import {
@@ -166,16 +165,10 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
                 DEV SOLD
               </span>
             )}
-            {item.freezeAuthority && (
-              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
-                <Snowflake className="w-3 h-3" />
-                FREEZE AUTH
-              </span>
-            )}
-            {item.mintAuthority && (
-              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
-                <Coins className="w-3 h-3" />
-                MINT AUTH
+            {!item.hasSocials && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-yellow/10 text-accent-yellow border-accent-yellow/20 font-medium flex items-center gap-1">
+                <MessageCircleOff className="w-3 h-3" />
+                NO SOCIALS
               </span>
             )}
             {item.isBundled && (

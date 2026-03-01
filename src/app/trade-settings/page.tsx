@@ -15,11 +15,11 @@ import {
   Users,
   Skull,
   BarChart3,
-  Snowflake,
-  Coins,
   Package,
   Clock,
   GraduationCap,
+  MessageSquare,
+  Globe,
 } from "lucide-react";
 import Toggle from "@/components/Toggle";
 
@@ -43,8 +43,9 @@ export default function TradeSettingsPage() {
   const [minBuyers, setMinBuyers] = useState("10");
   const [creatorRugFilter, setCreatorRugFilter] = useState(true);
   const [creatorRugMax, setCreatorRugMax] = useState("2");
-  const [freezeAuthorityCheck, setFreezeAuthorityCheck] = useState(true);
-  const [mintAuthorityCheck, setMintAuthorityCheck] = useState(true);
+  const [requireSocials, setRequireSocials] = useState(true);
+  const [minRepliesEnabled, setMinRepliesEnabled] = useState(false);
+  const [minReplies, setMinReplies] = useState("5");
   const [topHolderConcentration, setTopHolderConcentration] = useState(true);
   const [topHolderMax, setTopHolderMax] = useState("60");
   const [tokenAgeFilter, setTokenAgeFilter] = useState(true);
@@ -324,37 +325,44 @@ export default function TradeSettingsPage() {
             )}
           </div>
 
-          {/* Freeze Authority Check */}
+          {/* Require Socials */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={freezeAuthorityCheck}
-              onToggle={setFreezeAuthorityCheck}
-              label="Freeze Authority Check"
-              description="Skip if freeze authority is still active — creator can freeze all trading"
+              enabled={requireSocials}
+              onToggle={setRequireSocials}
+              label="Require Social Links"
+              description="Skip tokens with no Twitter, Telegram, or website linked on pump.fun"
             />
-            {freezeAuthorityCheck && (
+            {requireSocials && (
               <div className="mt-2 flex items-center gap-2">
-                <Snowflake className="w-3.5 h-3.5 text-accent-red" />
-                <span className="text-xs text-accent-red">
-                  Tokens with active freeze authority will be auto-skipped (critical)
+                <Globe className="w-3.5 h-3.5 text-accent-yellow" />
+                <span className="text-xs text-accent-yellow">
+                  Tokens without any social links will be auto-skipped
                 </span>
               </div>
             )}
           </div>
 
-          {/* Mint Authority Check */}
+          {/* Min Reply Count */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={mintAuthorityCheck}
-              onToggle={setMintAuthorityCheck}
-              label="Mint Authority Check"
-              description="Skip if mint authority is still active — creator can mint unlimited tokens"
+              enabled={minRepliesEnabled}
+              onToggle={setMinRepliesEnabled}
+              label="Minimum Reply Count"
+              description="Require a minimum number of replies on the pump.fun token page — filters out ghost launches"
             />
-            {mintAuthorityCheck && (
-              <div className="mt-2 flex items-center gap-2">
-                <Coins className="w-3.5 h-3.5 text-accent-red" />
-                <span className="text-xs text-accent-red">
-                  Tokens with active mint authority will be auto-skipped
+            {minRepliesEnabled && (
+              <div className="mt-3 flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={minReplies}
+                  onChange={(e) => setMinReplies(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="5"
+                />
+                <span className="text-xs text-gray-500">
+                  minimum replies on pump.fun page
                 </span>
               </div>
             )}

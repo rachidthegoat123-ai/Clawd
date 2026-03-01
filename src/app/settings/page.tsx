@@ -1,30 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import {
   Shield,
   Bell,
   Palette,
-  Key,
   CheckCircle2,
-  AlertTriangle,
   Wallet,
   Globe,
-  Eye,
-  EyeOff,
   Zap,
+  Copy,
+  Check,
+  ExternalLink,
 } from "lucide-react";
 import Toggle from "@/components/Toggle";
+import { shortenAddress } from "@/lib/mockData";
 
 type PriorityFee = "low" | "standard" | "turbo";
 
 export default function SettingsPage() {
+  const { publicKey, connected, disconnect, wallet } = useWallet();
+  const { setVisible } = useWalletModal();
+  const { connection } = useConnection();
+
+  // Wallet balance
+  const [balance, setBalance] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+
   // Priority Fees
   const [priorityFee, setPriorityFee] = useState<PriorityFee>("standard");
 
-  // Security
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [showKey, setShowKey] = useState(false);
+  // RPC
+  const [selectedRpc, setSelectedRpc] = useState("Helius");
 
   // Notifications
   const [pushNotifications, setPushNotifications] = useState(true);
@@ -41,6 +51,28 @@ export default function SettingsPage() {
   // Display
   const [compactMode, setCompactMode] = useState(false);
   const [showPnlInSol, setShowPnlInSol] = useState(true);
+
+  // Fetch balance when wallet connects
+  const fetchBalance = useCallback(async () => {
+    if (!publicKey || !connection) return;
+    try {
+      const bal = await connection.getBalance(publicKey);
+      setBalance(bal / LAMPORTS_PER_SOL);
+    } catch {
+      setBalance(null);
+    }
+  }, [publicKey, connection]);
+
+  useEffect(() => {
+    fetchBalance();
+  }, [fetchBalance]);
+
+  const handleCopyAddress = () => {
+    if (!publicKey) return;
+    navigator.clipboard.writeText(publicKey.toBase58());
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const feeOptions: {
     key: PriorityFee;
@@ -68,6 +100,8 @@ export default function SettingsPage() {
     },
   ];
 
+  const rpcOptions = ["Helius", "QuickNode", "Triton", "Custom"];
+
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
@@ -76,6 +110,125 @@ export default function SettingsPage() {
         <p className="text-sm text-gray-500 mt-1">
           Configure your Solana preferences, security, and notifications
         </p>
+      </div>
+
+      {/* ========== WALLET CONNECTION ========== */}
+      <div className="glass-card p-6">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-10 h-10 rounded-xl bg-accent-green/10 border border-accent-green/20 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-accent-green" />
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-100">
+              Wallet Connection
+            </h2>
+            <p className="text-xs text-gray-500">
+              Connect your Phantom wallet to enable trading
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          {/* Wallet Status */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Wallet className="w-5 h-5 text-gray-400" />
+                <div>
+                  <p className="text-sm font-medium text-gray-200">
+                    {wallet?.adapter.name || "Phantom"} Wallet
+                  </p>
+                  {connected && publicKey ? (
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-xs text-gray-500 font-mono">
+                        {shortenAddress(publicKey.toBase58())}
+                      </span>
+                      <button
+                        onClick={handleCopyAddress}
+                        className="text-gray-500 hover:text-gray-300 transition-colors"
+                      >
+                        {copied ? (
+                          <Check className="w-3 h-3 text-accent-green" />
+                        ) : (
+                          <Copy className="w-3 h-3" />
+                        )}
+                      </button>
+                      <a
+                        href={`https://solscan.io/account/${publicKey.toBase58()}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gray-500 hover:text-gray-300 transition-colors"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-500">
+                      No wallet connected
+                    </p>
+                  )}
+                </div>
+              </div>
+              {connected ? (
+                <button
+                  onClick={() => disconnect()}
+                  className="btn-danger text-sm py-2"
+                >
+                  Disconnect
+                </button>
+              ) : (
+                <button
+                  onClick={() => setVisible(true)}
+                  className="btn-primary text-sm py-2"
+                >
+                  Connect Wallet
+                </button>
+              )}
+            </div>
+
+            {/* Balance Display */}
+            {connected && balance !== null && (
+              <div className="mt-3 pt-3 border-t border-dark-500/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-gray-500">Balance</span>
+                  <span className="text-sm font-semibold text-gray-100 font-mono">
+                    {balance.toFixed(4)} SOL
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* RPC */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <div className="flex items-center gap-3 mb-3">
+              <Globe className="w-5 h-5 text-gray-400" />
+              <div>
+                <p className="text-sm font-medium text-gray-200">
+                  Solana RPC Endpoint
+                </p>
+                <p className="text-xs text-gray-500">
+                  Use a fast RPC for better snipe execution
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {rpcOptions.map((rpc) => (
+                <button
+                  key={rpc}
+                  onClick={() => setSelectedRpc(rpc)}
+                  className={`px-3 py-1.5 rounded-lg border text-xs cursor-pointer transition-colors ${
+                    rpc === selectedRpc
+                      ? "bg-accent-green/10 border-accent-green/20 text-accent-green"
+                      : "bg-dark-600 border-dark-500 text-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  {rpc}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ========== PRIORITY FEES ========== */}
@@ -128,122 +281,6 @@ export default function SettingsPage() {
               <p className="text-xs text-gray-500">{option.desc}</p>
             </button>
           ))}
-        </div>
-      </div>
-
-      {/* ========== SECURITY ========== */}
-      <div className="glass-card p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-xl bg-accent-green/10 border border-accent-green/20 flex items-center justify-center">
-            <Shield className="w-5 h-5 text-accent-green" />
-          </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-100">Security</h2>
-            <p className="text-xs text-gray-500">
-              Phantom wallet connection and key management
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          {/* Wallet Connection */}
-          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Wallet className="w-5 h-5 text-gray-400" />
-                <div>
-                  <p className="text-sm font-medium text-gray-200">
-                    Phantom Wallet
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {walletConnected
-                      ? "Connected to 7xKX...sAsU"
-                      : "No wallet connected"}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setWalletConnected(!walletConnected)}
-                className={
-                  walletConnected
-                    ? "btn-danger text-sm py-2"
-                    : "btn-primary text-sm py-2"
-                }
-              >
-                {walletConnected ? "Disconnect" : "Connect Phantom"}
-              </button>
-            </div>
-          </div>
-
-          {/* Private Key */}
-          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <div className="flex items-center gap-3 mb-3">
-              <Key className="w-5 h-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-200">
-                  Private Key / Seed Phrase
-                </p>
-                <p className="text-xs text-gray-500">
-                  Encrypted and stored locally — never sent to any server
-                </p>
-              </div>
-            </div>
-            <div className="relative">
-              <input
-                type={showKey ? "text" : "password"}
-                placeholder="Enter Solana private key or seed phrase..."
-                className="input-field text-sm pr-10 font-mono"
-                readOnly
-                value="•••••••••••••••••••••••••••••••••••"
-              />
-              <button
-                onClick={() => setShowKey(!showKey)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300"
-              >
-                {showKey ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <AlertTriangle className="w-3.5 h-3.5 text-accent-yellow" />
-              <span className="text-xs text-accent-yellow">
-                Never share your private key. Alpha Mirror stores it encrypted
-                on your device only.
-              </span>
-            </div>
-          </div>
-
-          {/* RPC */}
-          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <div className="flex items-center gap-3 mb-3">
-              <Globe className="w-5 h-5 text-gray-400" />
-              <div>
-                <p className="text-sm font-medium text-gray-200">
-                  Solana RPC Endpoint
-                </p>
-                <p className="text-xs text-gray-500">
-                  Use a fast RPC for better snipe execution
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              {["Helius", "QuickNode", "Triton", "Custom"].map((rpc) => (
-                <span
-                  key={rpc}
-                  className={`px-3 py-1.5 rounded-lg border text-xs cursor-pointer transition-colors ${
-                    rpc === "Helius"
-                      ? "bg-accent-green/10 border-accent-green/20 text-accent-green"
-                      : "bg-dark-600 border-dark-500 text-gray-300 hover:border-gray-400"
-                  }`}
-                >
-                  {rpc}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
 

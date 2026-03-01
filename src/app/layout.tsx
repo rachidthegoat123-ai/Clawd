@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import WalletProvider from "@/providers/WalletProvider";
 
 export const metadata: Metadata = {
   title: "Alpha Mirror — Pump.fun Sniper",
@@ -16,14 +17,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 ml-[260px] transition-all duration-300">
-            <div className="max-w-[1400px] mx-auto p-6 lg:p-8">
-              {children}
-            </div>
-          </main>
-        </div>
+        <WalletProvider>
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <main className="flex-1 ml-[260px] transition-all duration-300">
+              <div className="max-w-[1400px] mx-auto p-6 lg:p-8">
+                {children}
+              </div>
+            </main>
+          </div>
+        </WalletProvider>
       </body>
     </html>
   );
