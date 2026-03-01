@@ -42,7 +42,7 @@ export default function Sidebar() {
           <div>
             <h1 className="text-lg font-bold gradient-text">Alpha Mirror</h1>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-              Pump.fun Tracker
+              Pump.fun Sniper
             </p>
           </div>
         )}

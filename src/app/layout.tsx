@@ -3,9 +3,9 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
-  title: "Alpha Mirror — Pump.fun Tracker",
+  title: "Alpha Mirror — Pump.fun Sniper",
   description:
-    "Mirror the best pump.fun snipers on Solana. Intelligent copy-trading with rug protection and safety filters.",
+    "Mirror the best pump.fun snipers on Solana. Intelligent copy-trading with rug protection, safety filters, and PumpSwap graduation tracking.",
 };
 
 export default function RootLayout({

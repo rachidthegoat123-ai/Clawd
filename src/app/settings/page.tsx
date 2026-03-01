@@ -6,7 +6,6 @@ import {
   Bell,
   Palette,
   Key,
-  Smartphone,
   CheckCircle2,
   AlertTriangle,
   Wallet,
@@ -141,7 +140,7 @@ export default function SettingsPage() {
           <div>
             <h2 className="text-lg font-semibold text-gray-100">Security</h2>
             <p className="text-xs text-gray-500">
-              Solana wallet connection and key management
+              Phantom wallet connection and key management
             </p>
           </div>
         </div>
@@ -341,7 +340,7 @@ export default function SettingsPage() {
                 enabled={notifyGraduations}
                 onToggle={setNotifyGraduations}
                 label="Token Graduated"
-                description="When a held token graduates from pump.fun to Raydium"
+                description="When a held token graduates from pump.fun to PumpSwap"
               />
             </div>
             <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">

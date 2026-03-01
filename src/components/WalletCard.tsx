@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Activity, Crosshair, Skull } from "lucide-react";
+import { Activity, Crosshair, Skull, Users, Clock } from "lucide-react";
 import { type TrackedWallet, formatSol, shortenAddress } from "@/lib/mockData";
 
 interface WalletCardProps {
@@ -30,9 +30,6 @@ export default function WalletCard({ wallet }: WalletCardProps) {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="badge text-[10px] border bg-purple-500/10 text-purple-400 border-purple-500/20">
-              SOL
-            </span>
             {wallet.isActive && (
               <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
             )}
@@ -59,26 +56,31 @@ export default function WalletCard({ wallet }: WalletCardProps) {
           </div>
           <div>
             <p className="text-[10px] uppercase tracking-wider text-gray-500 mb-1">
-              ROI
+              Avg Multi
             </p>
             <p className="text-lg font-bold text-accent-green">
-              +{wallet.totalProfitPercent}%
+              {wallet.avgMultiplier}
             </p>
           </div>
         </div>
 
         {/* Pump.fun Stats */}
-        <div className="flex items-center gap-4 mb-4 text-xs text-gray-500">
+        <div className="flex items-center gap-4 mb-4 text-xs text-gray-500 flex-wrap">
           <span className="flex items-center gap-1">
             <Crosshair className="w-3 h-3" />
             {wallet.tokensAped} aped
           </span>
           <span className="flex items-center gap-1">
             <Skull className="w-3 h-3 text-accent-red" />
-            {wallet.rugsPulled} rugs
+            {wallet.rugsHit} rugs
           </span>
-          <span className="text-gray-600">
-            Avg entry: {wallet.avgEntryMcap}
+          <span className="flex items-center gap-1">
+            <Users className="w-3 h-3" />
+            {wallet.copiers} copiers
+          </span>
+          <span className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {wallet.avgHoldTime}
           </span>
         </div>
 

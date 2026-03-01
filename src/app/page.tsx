@@ -3,17 +3,18 @@
 import {
   Wallet,
   TrendingUp,
-  Users,
+  Crosshair,
   Target,
   ArrowUpRight,
   ArrowDownRight,
   ExternalLink,
   Rocket,
   GraduationCap,
+  Clock,
 } from "lucide-react";
 import PortfolioChart from "@/components/PortfolioChart";
 import ActivityItemComponent from "@/components/ActivityItem";
-import { activePositions, activityFeed, formatSol, formatMcap } from "@/lib/mockData";
+import { activePositions, activityFeed, formatSol, formatMcap, formatAge } from "@/lib/mockData";
 import Link from "next/link";
 
 const stats = [
@@ -34,18 +35,18 @@ const stats = [
     icon: TrendingUp,
   },
   {
-    label: "Active Mirrors",
-    value: "5",
-    change: "of 6 wallets",
+    label: "Tokens Sniped Today",
+    value: "12",
+    change: "across 6 wallets",
     changePercent: "",
     positive: true,
-    icon: Users,
+    icon: Crosshair,
   },
   {
-    label: "Snipe Win Rate",
-    value: "72.4%",
+    label: "Avg Multiplier",
+    value: "6.2x",
     change: "Last 30 days",
-    changePercent: "+4.2%",
+    changePercent: "+1.4x",
     positive: true,
     icon: Target,
   },
@@ -136,7 +137,8 @@ export default function Dashboard() {
                   <th className="pb-3 pr-4">Mirrored From</th>
                   <th className="pb-3 pr-4">Entry MCap</th>
                   <th className="pb-3 pr-4">Current MCap</th>
-                  <th className="pb-3 pr-4 text-right">P&L</th>
+                  <th className="pb-3 pr-4">Multiplier</th>
+                  <th className="pb-3 pr-4 text-right">Hold Time</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dark-500/30">
@@ -150,12 +152,12 @@ export default function Dashboard() {
                         {pos.graduated ? (
                           <span className="text-[10px] px-1.5 py-0.5 rounded border bg-accent-green/10 text-accent-green border-accent-green/20 flex items-center gap-0.5">
                             <GraduationCap className="w-2.5 h-2.5" />
-                            RAY
+                            PumpSwap
                           </span>
                         ) : (
                           <span className="text-[10px] px-1.5 py-0.5 rounded border bg-purple-500/10 text-purple-400 border-purple-500/20 flex items-center gap-0.5">
                             <Rocket className="w-2.5 h-2.5" />
-                            {pos.bondingCurvePercent}%
+                            {pos.bondingCurveProgress}%
                           </span>
                         )}
                       </div>
@@ -175,22 +177,21 @@ export default function Dashboard() {
                         {formatMcap(pos.currentMcap)}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        {pos.pnlPercent >= 0 ? (
+                    <td className="py-3 pr-4">
+                      <div className="flex items-center gap-1">
+                        {pos.pnlSol >= 0 ? (
                           <ArrowUpRight className="w-3.5 h-3.5 text-accent-green" />
                         ) : (
                           <ArrowDownRight className="w-3.5 h-3.5 text-accent-red" />
                         )}
                         <span
                           className={`text-sm font-semibold ${
-                            pos.pnlPercent >= 0
+                            pos.pnlSol >= 0
                               ? "text-accent-green"
                               : "text-accent-red"
                           }`}
                         >
-                          {pos.pnlPercent >= 0 ? "+" : ""}
-                          {pos.pnlPercent.toFixed(0)}%
+                          {pos.multiplier}
                         </span>
                       </div>
                       <p
@@ -202,6 +203,15 @@ export default function Dashboard() {
                       >
                         {pos.pnlSol >= 0 ? "+" : ""}
                         {pos.pnlSol.toFixed(1)} SOL
+                      </p>
+                    </td>
+                    <td className="py-3 pr-4 text-right">
+                      <div className="flex items-center justify-end gap-1 text-sm text-gray-400">
+                        <Clock className="w-3 h-3" />
+                        {formatAge(pos.holdTimeMins)}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Token: {formatAge(pos.tokenAgeMins)}
                       </p>
                     </td>
                   </tr>

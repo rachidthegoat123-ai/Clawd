@@ -15,6 +15,11 @@ import {
   Users,
   Skull,
   BarChart3,
+  Snowflake,
+  Coins,
+  Package,
+  Clock,
+  GraduationCap,
 } from "lucide-react";
 import Toggle from "@/components/Toggle";
 
@@ -29,10 +34,22 @@ export default function TradeSettingsPage() {
   const [maxMcap, setMaxMcap] = useState("500000");
   const [bondingCurveFilter, setBondingCurveFilter] = useState(true);
   const [minBondingPercent, setMinBondingPercent] = useState("5");
-  const [devWalletCheck, setDevWalletCheck] = useState(true);
-  const [holderDistribution, setHolderDistribution] = useState(true);
-  const [minHolders, setMinHolders] = useState("10");
+  const [maxBondingPercent, setMaxBondingPercent] = useState("95");
+  const [maxDevHolding, setMaxDevHolding] = useState(true);
+  const [maxDevHoldingPercent, setMaxDevHoldingPercent] = useState("5");
+  const [devSoldAutoSkip, setDevSoldAutoSkip] = useState(true);
   const [bundleDetection, setBundleDetection] = useState(true);
+  const [minBuyersEnabled, setMinBuyersEnabled] = useState(true);
+  const [minBuyers, setMinBuyers] = useState("10");
+  const [creatorRugFilter, setCreatorRugFilter] = useState(true);
+  const [creatorRugMax, setCreatorRugMax] = useState("2");
+  const [freezeAuthorityCheck, setFreezeAuthorityCheck] = useState(true);
+  const [mintAuthorityCheck, setMintAuthorityCheck] = useState(true);
+  const [topHolderConcentration, setTopHolderConcentration] = useState(true);
+  const [topHolderMax, setTopHolderMax] = useState("60");
+  const [tokenAgeFilter, setTokenAgeFilter] = useState(true);
+  const [minTokenAge, setMinTokenAge] = useState("1");
+  const [maxTokenAge, setMaxTokenAge] = useState("120");
 
   // Mirror Mode state
   const [mirrorMode, setMirrorMode] = useState<MirrorMode>("fixed");
@@ -42,16 +59,18 @@ export default function TradeSettingsPage() {
   // Slippage state
   const [slippage, setSlippage] = useState<SlippageLevel>("high");
 
+  // Jito Tips
+  const [jitoTips, setJitoTips] = useState(true);
+
   // Exit Strategy state
   const [shadowSell, setShadowSell] = useState(true);
+  const [autoSellDevSell, setAutoSellDevSell] = useState(true);
+  const [autoSellGraduation, setAutoSellGraduation] = useState(false);
   const [trailingStop, setTrailingStop] = useState(true);
   const [trailingStopPercent, setTrailingStopPercent] = useState("30");
   const [takeProfit, setTakeProfit] = useState(true);
   const [takeProfitMultiplier, setTakeProfitMultiplier] = useState("5");
   const [takeProfitSellPercent, setTakeProfitSellPercent] = useState("50");
-
-  // Jito Tips
-  const [jitoTips, setJitoTips] = useState(true);
 
   const mirrorModes: {
     key: MirrorMode;
@@ -161,13 +180,13 @@ export default function TradeSettingsPage() {
             )}
           </div>
 
-          {/* Bonding Curve Filter */}
+          {/* Bonding Curve Range */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
               enabled={bondingCurveFilter}
               onToggle={setBondingCurveFilter}
-              label="Bonding Curve Filter"
-              description="Only enter if bonding curve progress is above a minimum %"
+              label="Bonding Curve Range"
+              description="Only enter if bonding curve progress is within a specific range"
             />
             {bondingCurveFilter && (
               <div className="mt-3 flex items-center gap-2">
@@ -179,51 +198,60 @@ export default function TradeSettingsPage() {
                   className="input-field w-20 text-sm text-center"
                   placeholder="5"
                 />
+                <span className="text-xs text-gray-500">% min</span>
+                <span className="text-xs text-gray-500 mx-1">to</span>
+                <input
+                  type="text"
+                  value={maxBondingPercent}
+                  onChange={(e) => setMaxBondingPercent(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="95"
+                />
                 <span className="text-xs text-gray-500">
-                  % minimum bonding curve progress
+                  % max bonding curve progress
                 </span>
               </div>
             )}
           </div>
 
-          {/* Dev Wallet Check */}
+          {/* Max Dev Holding */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
-              enabled={devWalletCheck}
-              onToggle={setDevWalletCheck}
-              label="Dev Wallet Check"
-              description="Skip if deployer has already sold their tokens (rug signal)"
+              enabled={maxDevHolding}
+              onToggle={setMaxDevHolding}
+              label="Max Dev Holding %"
+              description="Skip if dev holds more than X% of supply"
             />
-            {devWalletCheck && (
+            {maxDevHolding && (
+              <div className="mt-3 flex items-center gap-2">
+                <Skull className="w-4 h-4 text-accent-red" />
+                <input
+                  type="text"
+                  value={maxDevHoldingPercent}
+                  onChange={(e) => setMaxDevHoldingPercent(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="5"
+                />
+                <span className="text-xs text-gray-500">
+                  % max dev holding
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Dev Sold Auto-Skip */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={devSoldAutoSkip}
+              onToggle={setDevSoldAutoSkip}
+              label="Dev Sold = Auto-Skip"
+              description="Automatically skip if deployer has already sold their tokens"
+            />
+            {devSoldAutoSkip && (
               <div className="mt-2 flex items-center gap-2">
                 <Skull className="w-3.5 h-3.5 text-accent-red" />
                 <span className="text-xs text-accent-red">
-                  Auto-skip if dev wallet sold &gt;50% of supply
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Holder Distribution */}
-          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
-            <Toggle
-              enabled={holderDistribution}
-              onToggle={setHolderDistribution}
-              label="Minimum Holders"
-              description="Require a minimum number of unique holders to avoid wash trading"
-            />
-            {holderDistribution && (
-              <div className="mt-3 flex items-center gap-2">
-                <Users className="w-4 h-4 text-gray-500" />
-                <input
-                  type="text"
-                  value={minHolders}
-                  onChange={(e) => setMinHolders(e.target.value)}
-                  className="input-field w-20 text-sm text-center"
-                  placeholder="10"
-                />
-                <span className="text-xs text-gray-500">
-                  minimum unique holders
+                  Auto-skip if dev wallet has sold any tokens
                 </span>
               </div>
             )}
@@ -234,15 +262,156 @@ export default function TradeSettingsPage() {
             <Toggle
               enabled={bundleDetection}
               onToggle={setBundleDetection}
-              label="Bundle Detection"
-              description="Flag tokens where deployer and early buyers share the same funding source"
+              label="Bundle Detection = Auto-Skip"
+              description="Auto-skip tokens where deployer and early buyers share the same funding source"
             />
             {bundleDetection && (
               <div className="mt-2 flex items-center gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" />
-                <span className="text-xs text-accent-green">
-                  Bundled launches will be auto-flagged for manual review
+                <Package className="w-3.5 h-3.5 text-accent-red" />
+                <span className="text-xs text-accent-red">
+                  Bundled launches will be auto-skipped
                 </span>
+              </div>
+            )}
+          </div>
+
+          {/* Min Unique Buyers */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={minBuyersEnabled}
+              onToggle={setMinBuyersEnabled}
+              label="Minimum Unique Buyers"
+              description="Require a minimum number of unique buyers to avoid wash trading"
+            />
+            {minBuyersEnabled && (
+              <div className="mt-3 flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={minBuyers}
+                  onChange={(e) => setMinBuyers(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="10"
+                />
+                <span className="text-xs text-gray-500">
+                  minimum unique buyers
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Creator Rug History */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={creatorRugFilter}
+              onToggle={setCreatorRugFilter}
+              label="Creator Rug History"
+              description="Skip if the token creator has rugged more than X previous tokens"
+            />
+            {creatorRugFilter && (
+              <div className="mt-3 flex items-center gap-2">
+                <Skull className="w-4 h-4 text-accent-red" />
+                <span className="text-xs text-gray-500">Skip if creator has rugged &gt;</span>
+                <input
+                  type="text"
+                  value={creatorRugMax}
+                  onChange={(e) => setCreatorRugMax(e.target.value)}
+                  className="input-field w-16 text-sm text-center"
+                  placeholder="2"
+                />
+                <span className="text-xs text-gray-500">tokens</span>
+              </div>
+            )}
+          </div>
+
+          {/* Freeze Authority Check */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={freezeAuthorityCheck}
+              onToggle={setFreezeAuthorityCheck}
+              label="Freeze Authority Check"
+              description="Skip if freeze authority is still active — creator can freeze all trading"
+            />
+            {freezeAuthorityCheck && (
+              <div className="mt-2 flex items-center gap-2">
+                <Snowflake className="w-3.5 h-3.5 text-accent-red" />
+                <span className="text-xs text-accent-red">
+                  Tokens with active freeze authority will be auto-skipped (critical)
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Mint Authority Check */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={mintAuthorityCheck}
+              onToggle={setMintAuthorityCheck}
+              label="Mint Authority Check"
+              description="Skip if mint authority is still active — creator can mint unlimited tokens"
+            />
+            {mintAuthorityCheck && (
+              <div className="mt-2 flex items-center gap-2">
+                <Coins className="w-3.5 h-3.5 text-accent-red" />
+                <span className="text-xs text-accent-red">
+                  Tokens with active mint authority will be auto-skipped
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Top Holder Concentration */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={topHolderConcentration}
+              onToggle={setTopHolderConcentration}
+              label="Top Holder Concentration"
+              description="Skip if top 10 holders control more than X% of supply"
+            />
+            {topHolderConcentration && (
+              <div className="mt-3 flex items-center gap-2">
+                <Users className="w-4 h-4 text-gray-500" />
+                <span className="text-xs text-gray-500">Skip if top 10 hold &gt;</span>
+                <input
+                  type="text"
+                  value={topHolderMax}
+                  onChange={(e) => setTopHolderMax(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="60"
+                />
+                <span className="text-xs text-gray-500">% of supply</span>
+              </div>
+            )}
+          </div>
+
+          {/* Token Age Filter */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={tokenAgeFilter}
+              onToggle={setTokenAgeFilter}
+              label="Token Age Filter"
+              description="Only enter tokens within a specific age range (in minutes)"
+            />
+            {tokenAgeFilter && (
+              <div className="mt-3 flex items-center gap-2">
+                <Clock className="w-4 h-4 text-gray-500" />
+                <input
+                  type="text"
+                  value={minTokenAge}
+                  onChange={(e) => setMinTokenAge(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="1"
+                />
+                <span className="text-xs text-gray-500">min</span>
+                <span className="text-xs text-gray-500 mx-1">to</span>
+                <input
+                  type="text"
+                  value={maxTokenAge}
+                  onChange={(e) => setMaxTokenAge(e.target.value)}
+                  className="input-field w-20 text-sm text-center"
+                  placeholder="120"
+                />
+                <span className="text-xs text-gray-500">max minutes</span>
               </div>
             )}
           </div>
@@ -371,7 +540,7 @@ export default function TradeSettingsPage() {
             enabled={jitoTips}
             onToggle={setJitoTips}
             label="Jito Bundle Tips"
-            description="Use Jito bundles for faster transaction inclusion and front-running protection"
+            description="Use Jito bundles for faster transaction inclusion and front-running protection on Solana"
           />
           {jitoTips && (
             <div className="mt-2 flex items-center gap-2">
@@ -411,6 +580,42 @@ export default function TradeSettingsPage() {
             />
           </div>
 
+          {/* Auto-sell on Dev Sell */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={autoSellDevSell}
+              onToggle={setAutoSellDevSell}
+              label="Auto-Sell on Dev Sell"
+              description="Automatically sell your position if the dev wallet starts dumping tokens"
+            />
+            {autoSellDevSell && (
+              <div className="mt-2 flex items-center gap-2">
+                <Skull className="w-3.5 h-3.5 text-accent-red" />
+                <span className="text-xs text-accent-red">
+                  Will trigger immediate sell if dev dumps
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Auto-sell on Graduation */}
+          <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
+            <Toggle
+              enabled={autoSellGraduation}
+              onToggle={setAutoSellGraduation}
+              label="Auto-Sell on Graduation"
+              description="Take profit when token graduates from pump.fun bonding curve to PumpSwap"
+            />
+            {autoSellGraduation && (
+              <div className="mt-2 flex items-center gap-2">
+                <GraduationCap className="w-3.5 h-3.5 text-accent-green" />
+                <span className="text-xs text-accent-green">
+                  Will sell 100% of position on graduation to PumpSwap
+                </span>
+              </div>
+            )}
+          </div>
+
           {/* Trailing Stop-Loss */}
           <div className="p-4 rounded-xl bg-dark-800/50 border border-dark-500/30">
             <Toggle
@@ -440,7 +645,7 @@ export default function TradeSettingsPage() {
             <Toggle
               enabled={takeProfit}
               onToggle={setTakeProfit}
-              label="Take Profit"
+              label="Take Profit at Multiplier"
               description="Automatically sell a portion when your multiplier target is hit"
             />
             {takeProfit && (

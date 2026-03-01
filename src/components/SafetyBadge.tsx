@@ -2,12 +2,11 @@ import { ShieldCheck, ShieldAlert } from "lucide-react";
 
 interface SafetyBadgeProps {
   score: number;
-  devSold: boolean;
   showLabel?: boolean;
 }
 
-export default function SafetyBadge({ score, devSold, showLabel = true }: SafetyBadgeProps) {
-  const isGood = score >= 60 && !devSold;
+export default function SafetyBadge({ score, showLabel = true }: SafetyBadgeProps) {
+  const isGood = score >= 60;
 
   return (
     <div className="flex items-center gap-2">
@@ -31,7 +30,7 @@ export default function SafetyBadge({ score, devSold, showLabel = true }: Safety
             isGood ? "text-accent-green" : "text-accent-red"
           }`}
         >
-          {devSold ? "Dev Dumped" : isGood ? "Safe" : "Risky"}
+          {isGood ? "Safe" : "Risky"}
         </span>
       )}
     </div>

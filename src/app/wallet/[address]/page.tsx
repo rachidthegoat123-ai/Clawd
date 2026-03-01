@@ -15,6 +15,8 @@ import {
   Skull,
   Rocket,
   GraduationCap,
+  Users,
+  Clock,
 } from "lucide-react";
 import { trackedWallets, formatSol, shortenAddress, formatMcap } from "@/lib/mockData";
 
@@ -26,14 +28,14 @@ const riskColors = {
 
 // Mock recent trades for pump.fun
 const mockTrades = [
-  { token: "$PNUT", action: "SNIPE", amountSol: 12.5, pnl: 1860, mcap: "$4.2K", platform: "pump.fun", date: "2h ago" },
-  { token: "$BCAT", action: "SNIPE", amountSol: 5.2, pnl: 517, mcap: "$6.8K", platform: "pump.fun", date: "4h ago" },
-  { token: "$WIF", action: "SELL", amountSol: 220.0, pnl: 86, mcap: "$1.2M", platform: "Jupiter", date: "1d ago" },
-  { token: "$MOODENG", action: "BUY", amountSol: 42.0, pnl: 516, mcap: "$68K", platform: "pump.fun", date: "1d ago" },
-  { token: "$FOMO", action: "SNIPE", amountSol: 3.0, pnl: 780, mcap: "$2.1K", platform: "pump.fun", date: "2d ago" },
-  { token: "$RUG", action: "SNIPE", amountSol: 8.0, pnl: -100, mcap: "$1.5K", platform: "pump.fun", date: "3d ago" },
-  { token: "$MEW", action: "SELL", amountSol: 180.0, pnl: 142, mcap: "$890K", platform: "Jupiter", date: "4d ago" },
-  { token: "$SLERF", action: "BUY", amountSol: 35.0, pnl: 320, mcap: "$45K", platform: "Raydium", date: "5d ago" },
+  { token: "$PNUT", action: "SNIPE", amountSol: 12.5, multiplier: "19.6x", pnlSol: 232.5, mcap: "$4.2K", platform: "pump.fun", date: "2h ago" },
+  { token: "$BCAT", action: "SNIPE", amountSol: 5.2, multiplier: "5.0x", pnlSol: 20.8, mcap: "$6.8K", platform: "pump.fun", date: "4h ago" },
+  { token: "$WIF", action: "SELL", amountSol: 220.0, multiplier: "86x", pnlSol: 8900, mcap: "$1.2M", platform: "Jupiter", date: "1d ago" },
+  { token: "$MOODENG", action: "BUY", amountSol: 42.0, multiplier: "8.1x", pnlSol: 297, mcap: "$68K", platform: "PumpSwap", date: "1d ago" },
+  { token: "$FOMO", action: "SNIPE", amountSol: 3.0, multiplier: "6.0x", pnlSol: 14.9, mcap: "$2.1K", platform: "pump.fun", date: "2d ago" },
+  { token: "$RUG", action: "SNIPE", amountSol: 8.0, multiplier: "0x", pnlSol: -8.0, mcap: "$1.5K", platform: "pump.fun", date: "3d ago" },
+  { token: "$MEW", action: "SELL", amountSol: 180.0, multiplier: "14.2x", pnlSol: 2376, mcap: "$890K", platform: "Jupiter", date: "4d ago" },
+  { token: "$SLERF", action: "BUY", amountSol: 35.0, multiplier: "320x", pnlSol: 12000, mcap: "$45K", platform: "PumpSwap", date: "5d ago" },
 ];
 
 export default function WalletProfilePage() {
@@ -97,9 +99,6 @@ export default function WalletProfilePage() {
                 >
                   <Copy className="w-3.5 h-3.5" />
                 </button>
-                <span className="badge text-[10px] border bg-purple-500/10 text-purple-400 border-purple-500/20">
-                  SOL
-                </span>
               </div>
             </div>
           </div>
@@ -131,32 +130,24 @@ export default function WalletProfilePage() {
           <p className="text-3xl font-bold text-gray-100 mt-1">
             {formatSol(wallet.totalProfitSol)}
           </p>
-          <span className="text-xs text-accent-green">
-            +{wallet.totalProfitPercent}% ROI
-          </span>
         </div>
         <div className="stat-card">
           <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wider">
             <Crosshair className="w-3.5 h-3.5" />
-            Tokens Aped
+            Avg Multiplier
           </div>
-          <p className="text-3xl font-bold text-gray-100 mt-1">
-            {wallet.tokensAped}
+          <p className="text-3xl font-bold text-accent-green mt-1">
+            {wallet.avgMultiplier}
           </p>
-          <span className="text-xs text-gray-500">
-            of {wallet.totalTrades} total trades
-          </span>
         </div>
         <div className="stat-card">
           <div className="flex items-center gap-2 text-gray-500 text-xs uppercase tracking-wider">
-            <Shield className="w-3.5 h-3.5" />
-            Risk Level
+            <Clock className="w-3.5 h-3.5" />
+            Avg Hold Time
           </div>
-          <div className="mt-2">
-            <span className={`${riskColors[wallet.riskLevel]} text-sm`}>
-              {wallet.riskLevel}
-            </span>
-          </div>
+          <p className="text-3xl font-bold text-gray-100 mt-1">
+            {wallet.avgHoldTime}
+          </p>
         </div>
       </div>
 
@@ -195,19 +186,26 @@ export default function WalletProfilePage() {
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Favorite Play</span>
-              <span className="text-sm font-semibold text-gray-200">{wallet.favoritePlay}</span>
+              <span className="text-sm font-semibold text-gray-200 text-right max-w-[180px]">{wallet.favoritePlay}</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Rugs Hit</span>
               <span className="text-sm font-semibold text-accent-red flex items-center gap-1">
                 <Skull className="w-3 h-3" />
-                {wallet.rugsPulled}
+                {wallet.rugsHit}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-500">Rug Rate</span>
               <span className="text-sm font-semibold text-gray-200">
-                {((wallet.rugsPulled / wallet.tokensAped) * 100).toFixed(1)}%
+                {((wallet.rugsHit / wallet.tokensAped) * 100).toFixed(1)}%
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-500">Copiers</span>
+              <span className="text-sm font-semibold text-gray-200 flex items-center gap-1">
+                <Users className="w-3 h-3" />
+                {wallet.copiers}
               </span>
             </div>
           </div>
@@ -246,6 +244,7 @@ export default function WalletProfilePage() {
                 <th className="pb-3 pr-4">Amount</th>
                 <th className="pb-3 pr-4">Entry MCap</th>
                 <th className="pb-3 pr-4">Platform</th>
+                <th className="pb-3 pr-4">Multiplier</th>
                 <th className="pb-3 pr-4 text-right">P&L</th>
                 <th className="pb-3 text-right">When</th>
               </tr>
@@ -286,14 +285,23 @@ export default function WalletProfilePage() {
                       {trade.platform}
                     </span>
                   </td>
+                  <td className="py-3 pr-4">
+                    <span
+                      className={`text-sm font-semibold ${
+                        trade.pnlSol >= 0 ? "text-accent-green" : "text-accent-red"
+                      }`}
+                    >
+                      {trade.multiplier}
+                    </span>
+                  </td>
                   <td className="py-3 pr-4 text-right">
                     <span
                       className={`text-sm font-semibold ${
-                        trade.pnl >= 0 ? "text-accent-green" : "text-accent-red"
+                        trade.pnlSol >= 0 ? "text-accent-green" : "text-accent-red"
                       }`}
                     >
-                      {trade.pnl >= 0 ? "+" : ""}
-                      {trade.pnl}%
+                      {trade.pnlSol >= 0 ? "+" : ""}
+                      {trade.pnlSol.toFixed(1)} SOL
                     </span>
                   </td>
                   <td className="py-3 text-right">

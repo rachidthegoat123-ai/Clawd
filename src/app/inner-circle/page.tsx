@@ -12,7 +12,7 @@ import {
 import WalletCard from "@/components/WalletCard";
 import { trackedWallets } from "@/lib/mockData";
 
-type SortOption = "winRate" | "profit" | "roi" | "trades";
+type SortOption = "winRate" | "profit" | "avgMultiplier" | "trades";
 
 export default function InnerCirclePage() {
   const [search, setSearch] = useState("");
@@ -34,8 +34,8 @@ export default function InnerCirclePage() {
           return b.winRate - a.winRate;
         case "profit":
           return b.totalProfitSol - a.totalProfitSol;
-        case "roi":
-          return b.totalProfitPercent - a.totalProfitPercent;
+        case "avgMultiplier":
+          return parseFloat(b.avgMultiplier) - parseFloat(a.avgMultiplier);
         case "trades":
           return b.totalTrades - a.totalTrades;
         default:
@@ -143,7 +143,7 @@ export default function InnerCirclePage() {
           >
             <option value="winRate">Win Rate</option>
             <option value="profit">Total Profit (SOL)</option>
-            <option value="roi">ROI %</option>
+            <option value="avgMultiplier">Avg Multiplier</option>
             <option value="trades">Total Trades</option>
           </select>
         </div>

@@ -10,9 +10,18 @@ import {
   Rocket,
   GraduationCap,
   Users,
+  Crown,
+  Snowflake,
+  Coins,
+  Package,
+  Skull,
 } from "lucide-react";
 import SafetyBadge from "./SafetyBadge";
-import { type ActivityItem as ActivityItemType, formatMcap } from "@/lib/mockData";
+import {
+  type ActivityItem as ActivityItemType,
+  formatMcap,
+  formatAge,
+} from "@/lib/mockData";
 
 interface ActivityItemProps {
   item: ActivityItemType;
@@ -38,7 +47,7 @@ const statusConfig = {
     bg: "bg-accent-yellow/10 border-accent-yellow/20",
     animate: "animate-spin",
   },
-  copying: {
+  sniping: {
     icon: Loader2,
     label: "Sniping...",
     color: "text-accent-cyan",
@@ -86,7 +95,9 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
             <span className="font-semibold text-gray-100">
               {item.walletNickname}
             </span>
-            <span className={`flex items-center gap-1 text-sm font-medium ${actionColors[item.action]}`}>
+            <span
+              className={`flex items-center gap-1 text-sm font-medium ${actionColors[item.action]}`}
+            >
               <ActionIcon className="w-4 h-4" />
               {item.action}
             </span>
@@ -98,11 +109,20 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
             </span>
           </div>
 
-          {/* Details */}
+          {/* Details Row */}
           <div className="flex items-center gap-2 text-xs text-gray-500 mb-2 flex-wrap">
             <span>on {item.platform}</span>
             <span>·</span>
             <span>MCap {formatMcap(item.marketCap)}</span>
+            <span>·</span>
+            <span>Age {formatAge(item.tokenAgeMins)}</span>
+            <span>·</span>
+            <span>{item.solInBondingCurve.toFixed(1)} SOL in curve</span>
+            <span>·</span>
+            <span className="flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              {item.uniqueBuyers} buyers
+            </span>
             <span>·</span>
             <span className="flex items-center gap-1">
               {item.graduated ? (
@@ -114,36 +134,60 @@ export default function ActivityItemComponent({ item }: ActivityItemProps) {
                 <>
                   <Rocket className="w-3 h-3 text-purple-400" />
                   <span className="text-purple-400">
-                    Curve {item.bondingCurvePercent}%
+                    Curve {item.bondingCurveProgress}%
                   </span>
                 </>
               )}
             </span>
-            <span>·</span>
-            <span className="flex items-center gap-1">
-              <Users className="w-3 h-3" />
-              {item.holderCount} holders
-            </span>
+            {item.isKOTH && (
+              <>
+                <span>·</span>
+                <span className="flex items-center gap-1 text-accent-yellow font-medium">
+                  <Crown className="w-3 h-3" />
+                  KOTH
+                </span>
+              </>
+            )}
             <span>·</span>
             <span>{item.timestamp}</span>
           </div>
 
-          {/* Agent Status & Safety */}
-          <div className="flex items-center gap-3 flex-wrap">
+          {/* Agent Status & Safety & Warnings */}
+          <div className="flex items-center gap-2 flex-wrap">
             <div
               className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border ${status.bg} ${status.color}`}
             >
               <StatusIcon className={`w-3.5 h-3.5 ${status.animate}`} />
               {status.label}
             </div>
-            <SafetyBadge
-              score={item.safetyScore}
-              devSold={item.devSold}
-              showLabel={false}
-            />
+            <SafetyBadge score={item.safetyScore} showLabel={false} />
             {item.devSold && (
               <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium">
                 DEV SOLD
+              </span>
+            )}
+            {item.freezeAuthority && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
+                <Snowflake className="w-3 h-3" />
+                FREEZE AUTH
+              </span>
+            )}
+            {item.mintAuthority && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
+                <Coins className="w-3 h-3" />
+                MINT AUTH
+              </span>
+            )}
+            {item.isBundled && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
+                <Package className="w-3 h-3" />
+                BUNDLED
+              </span>
+            )}
+            {item.creatorRugCount > 0 && (
+              <span className="text-[10px] px-2 py-0.5 rounded border bg-accent-red/10 text-accent-red border-accent-red/20 font-medium flex items-center gap-1">
+                <Skull className="w-3 h-3" />
+                Creator rugged {item.creatorRugCount}/{item.creatorTokenCount}
               </span>
             )}
           </div>
