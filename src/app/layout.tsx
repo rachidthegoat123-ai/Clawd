@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import TopBar from "@/components/TopBar";
 import WalletProvider from "@/providers/WalletProvider";
 
 export const metadata: Metadata = {
@@ -21,6 +22,7 @@ export default function RootLayout({
           <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex-1 ml-[260px] transition-all duration-300">
+              <TopBar />
               <div className="max-w-[1400px] mx-auto p-6 lg:p-8">
                 {children}
               </div>

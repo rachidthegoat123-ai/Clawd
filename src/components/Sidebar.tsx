@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import {
   LayoutDashboard,
-  Users,
+  Crosshair,
   Radio,
   Settings,
   SlidersHorizontal,
@@ -14,14 +12,12 @@ import {
   Rocket,
   ChevronLeft,
   ChevronRight,
-  Wallet,
 } from "lucide-react";
 import { useState } from "react";
-import { shortenAddress } from "@/lib/mockData";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/inner-circle", label: "Inner Circle", icon: Users },
+  { href: "/inner-circle", label: "Tracked Wallets", icon: Crosshair },
   { href: "/feed", label: "Live Feed", icon: Radio },
   { href: "/trade-settings", label: "Trade Settings", icon: SlidersHorizontal },
   { href: "/settings", label: "Settings", icon: Settings },
@@ -30,8 +26,6 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const { publicKey, connected } = useWallet();
-  const { setVisible } = useWalletModal();
 
   return (
     <aside
@@ -74,76 +68,18 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Wallet Connection */}
-      <div className="px-3 pb-2">
-        {!collapsed ? (
-          connected && publicKey ? (
-            <button
-              onClick={() => setVisible(true)}
-              className="w-full p-3 rounded-xl bg-dark-600/50 border border-dark-500/30 hover:border-dark-500 transition-colors text-left"
-            >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-accent-green rounded-full" />
-                <span className="text-xs font-medium text-gray-300">
-                  Connected
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 font-mono mt-1">
-                {shortenAddress(publicKey.toBase58())}
-              </p>
-            </button>
-          ) : (
-            <button
-              onClick={() => setVisible(true)}
-              className="w-full p-3 rounded-xl bg-accent-green/10 border border-accent-green/20 hover:bg-accent-green/15 transition-colors flex items-center gap-2"
-            >
-              <Wallet className="w-4 h-4 text-accent-green" />
-              <span className="text-xs font-medium text-accent-green">
-                Connect Wallet
-              </span>
-            </button>
-          )
-        ) : (
-          <button
-            onClick={() => setVisible(true)}
-            className="w-full flex justify-center"
-            title={connected ? "Wallet connected" : "Connect wallet"}
-          >
-            <div
-              className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                connected
-                  ? "bg-accent-green/10 border border-accent-green/20"
-                  : "bg-dark-600 border border-dark-500"
-              }`}
-            >
-              <Wallet
-                className={`w-4 h-4 ${
-                  connected ? "text-accent-green" : "text-gray-500"
-                }`}
-              />
-            </div>
-          </button>
-        )}
-      </div>
-
-      {/* Agent Status */}
+      {/* Bottom Info */}
       <div className="p-4 border-t border-dark-500/50">
         {!collapsed ? (
           <div className="glass-card p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
-              <span className="text-xs font-medium text-accent-green">
-                Sniper Online
-              </span>
-            </div>
             <div className="flex items-center gap-2 text-xs text-gray-400">
               <Zap className="w-3 h-3" />
-              <span>Watching 6 wallets on pump.fun</span>
+              <span>Tracking 6 wallets</span>
             </div>
           </div>
         ) : (
           <div className="flex justify-center">
-            <div className="w-2 h-2 bg-accent-green rounded-full animate-pulse" />
+            <Zap className="w-3 h-3 text-gray-500" />
           </div>
         )}
       </div>

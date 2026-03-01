@@ -58,9 +58,9 @@ export default function InnerCirclePage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-100">The Inner Circle</h1>
+          <h1 className="text-2xl font-bold text-gray-100">Tracked Wallets</h1>
           <p className="text-sm text-gray-500 mt-1">
-            Your directory of elite pump.fun snipers and Solana whales
+            The wallets you&apos;re copy-trading on pump.fun
           </p>
         </div>
         <button

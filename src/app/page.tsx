@@ -11,10 +11,18 @@ import {
   Rocket,
   GraduationCap,
   Clock,
+  LogOut,
 } from "lucide-react";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useWalletModal } from "@solana/wallet-adapter-react-ui";
 import PortfolioChart from "@/components/PortfolioChart";
 import ActivityItemComponent from "@/components/ActivityItem";
-import { activePositions, activityFeed, formatSol, formatMcap, formatAge } from "@/lib/mockData";
+import {
+  activePositions,
+  activityFeed,
+  formatMcap,
+  formatAge,
+} from "@/lib/mockData";
 import Link from "next/link";
 
 const stats = [
@@ -53,6 +61,60 @@ const stats = [
 ];
 
 export default function Dashboard() {
+  const { connected } = useWallet();
+  const { setVisible } = useWalletModal();
+
+  // Not connected — show onboarding CTA
+  if (!connected) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-100">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Your pump.fun mirror portfolio at a glance
+          </p>
+        </div>
+
+        {/* Connect Wallet CTA */}
+        <div className="glass-card p-10 text-center max-w-xl mx-auto mt-12">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-accent-green to-accent-cyan flex items-center justify-center mx-auto mb-5">
+            <Wallet className="w-8 h-8 text-dark-900" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-100 mb-2">
+            Connect your wallet to get started
+          </h2>
+          <p className="text-sm text-gray-400 mb-6 max-w-sm mx-auto">
+            Connect your Phantom wallet to start copy-trading the best pump.fun
+            snipers. Your keys never leave your device.
+          </p>
+          <button
+            onClick={() => setVisible(true)}
+            className="btn-primary mx-auto"
+          >
+            <Wallet className="w-4 h-4" />
+            Connect Phantom
+          </button>
+
+          <div className="mt-8 grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p className="text-2xl font-bold text-accent-green">6</p>
+              <p className="text-xs text-gray-500 mt-0.5">Top Wallets</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-100">12</p>
+              <p className="text-xs text-gray-500 mt-0.5">Safety Filters</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-accent-cyan">Auto</p>
+              <p className="text-xs text-gray-500 mt-0.5">Exit Strategies</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Connected — show full dashboard
   return (
     <div className="space-y-6">
       {/* Page Header */}
@@ -135,10 +197,10 @@ export default function Dashboard() {
                 <tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b border-dark-500/50">
                   <th className="pb-3 pr-4">Token</th>
                   <th className="pb-3 pr-4">Mirrored From</th>
-                  <th className="pb-3 pr-4">Entry MCap</th>
-                  <th className="pb-3 pr-4">Current MCap</th>
-                  <th className="pb-3 pr-4">Multiplier</th>
-                  <th className="pb-3 pr-4 text-right">Hold Time</th>
+                  <th className="pb-3 pr-4">Entry</th>
+                  <th className="pb-3 pr-4">Now</th>
+                  <th className="pb-3 pr-4">P&L</th>
+                  <th className="pb-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dark-500/30">
@@ -161,6 +223,10 @@ export default function Dashboard() {
                           </span>
                         )}
                       </div>
+                      <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
+                        <Clock className="w-2.5 h-2.5" />
+                        {formatAge(pos.holdTimeMins)}
+                      </p>
                     </td>
                     <td className="py-3 pr-4">
                       <span className="text-sm text-gray-400">
@@ -168,7 +234,7 @@ export default function Dashboard() {
                       </span>
                     </td>
                     <td className="py-3 pr-4">
-                      <span className="text-sm text-gray-300 font-mono">
+                      <span className="text-sm text-gray-400 font-mono">
                         {formatMcap(pos.entryMcap)}
                       </span>
                     </td>
@@ -205,14 +271,11 @@ export default function Dashboard() {
                         {pos.pnlSol.toFixed(1)} SOL
                       </p>
                     </td>
-                    <td className="py-3 pr-4 text-right">
-                      <div className="flex items-center justify-end gap-1 text-sm text-gray-400">
-                        <Clock className="w-3 h-3" />
-                        {formatAge(pos.holdTimeMins)}
-                      </div>
-                      <p className="text-xs text-gray-500 mt-0.5">
-                        Token: {formatAge(pos.tokenAgeMins)}
-                      </p>
+                    <td className="py-3 text-right">
+                      <button className="opacity-0 group-hover:opacity-100 transition-opacity px-3 py-1.5 rounded-lg text-xs font-medium bg-accent-red/10 text-accent-red border border-accent-red/20 hover:bg-accent-red/20 flex items-center gap-1 ml-auto">
+                        <LogOut className="w-3 h-3" />
+                        Sell
+                      </button>
                     </td>
                   </tr>
                 ))}

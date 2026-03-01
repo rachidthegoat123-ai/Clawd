@@ -51,7 +51,7 @@ export default function WalletProfilePage() {
       <div className="text-center py-20">
         <p className="text-gray-500">Wallet not found.</p>
         <Link href="/inner-circle" className="text-accent-blue text-sm mt-2 inline-block">
-          Back to Inner Circle
+          Back to Tracked Wallets
         </Link>
       </div>
     );
@@ -65,7 +65,7 @@ export default function WalletProfilePage() {
         className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
-        Back to Inner Circle
+        Back to Tracked Wallets
       </Link>
 
       {/* Profile Header */}
